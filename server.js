@@ -34,7 +34,6 @@ app.get('/todos/:id', function (req, res) {
 
 // POST /todos
 app.post('/todos', function (req, res) {
-	// var body = req.body;
 	var body = _.pick(req.body, 'description', 'completed');
 
 	if ( !_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0 ) {
@@ -53,6 +52,32 @@ app.post('/todos', function (req, res) {
 	res.json(body);
 });
 
+
+// DELETE /todos/:id
+// app.delete('/todos/:id', function (req, res) {
+// 	var todoID = parseInt(req.params.id, 10);
+// 	var matchedToDo =_.findWhere(todos, {id: todoID});
+
+// 	if (matchedToDo !== null) {
+// 		todos = _.without(todos, matchedToDo);
+// 		res.send(matchedToDo);
+// 	} else {
+// 		res.send('404: something is fucked up. try again homie');
+// 		res.status(404).send();
+// 	};
+// });
+
+app.delete('/todos/:id', function (req, res) {
+	var todoID = parseInt(req.params.id, 10);
+	var matchedToDo =_.findWhere(todos, {id: todoID});
+
+	if (!matchedToDo) {
+		res.status(404).send('404: something is fucked up. try again homie');
+	} else {
+		todos = _.without(todos, matchedToDo);
+		res.send(matchedToDo);
+	};
+});
 
 
 app.listen(PORT, function() {
