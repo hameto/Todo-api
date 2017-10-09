@@ -1,5 +1,6 @@
 var express = require ('express');
 var bodyParser = require('body-parser');
+var _ = require('underscore');
 
 var app = express(); 
 var PORT = process.env.PORT || 3000;
@@ -20,13 +21,7 @@ app.get('/todos', function (req, res) {
 // GET /todos/:id
 app.get('/todos/:id', function (req, res) {
 	var todoID = parseInt(req.params.id, 10);
-	var matchedToDo;
-
-	todos.forEach(function (todo) {
-		if (todoID === todo.id) {
-			matchedToDo = todo;
-		} 
-	});
+	var matchedToDo =_.findWhere(todos, {id: todoID});
 
 	if (matchedToDo) {
 		res.json(matchedToDo);
@@ -39,11 +34,18 @@ app.get('/todos/:id', function (req, res) {
 
 // POST /todos
 app.post('/todos', function (req, res) {
-	var body = req.body;
+	// var body = req.body;
+	var body = _.pick(req.body, 'description', 'completed');
 
+	if ( !_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0 ) {
+		return res.status(400).send();	
+	}
+
+	// set body.description to be trimmed value
+	body.description = body.description.trim();
 
 	// add id field
-	body.id = (todos.length + 1);
+	body.id = todos.length + 1;
 
 	// push body into array
 	todos.push(body);
@@ -56,3 +58,7 @@ app.post('/todos', function (req, res) {
 app.listen(PORT, function() {
 	console.log('Express listening on port ' + PORT + '!');
 });
+
+
+
+
