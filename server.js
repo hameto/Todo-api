@@ -52,21 +52,7 @@ app.post('/todos', function (req, res) {
 	res.json(body);
 });
 
-
 // DELETE /todos/:id
-// app.delete('/todos/:id', function (req, res) {
-// 	var todoID = parseInt(req.params.id, 10);
-// 	var matchedToDo =_.findWhere(todos, {id: todoID});
-
-// 	if (matchedToDo !== null) {
-// 		todos = _.without(todos, matchedToDo);
-// 		res.send(matchedToDo);
-// 	} else {
-// 		res.send('404: something is fucked up. try again homie');
-// 		res.status(404).send();
-// 	};
-// });
-
 app.delete('/todos/:id', function (req, res) {
 	var todoID = parseInt(req.params.id, 10);
 	var matchedToDo =_.findWhere(todos, {id: todoID});
@@ -80,10 +66,37 @@ app.delete('/todos/:id', function (req, res) {
 });
 
 
-app.listen(PORT, function() {
-	console.log('Express listening on port ' + PORT + '!');
+// PUT /todos/:id
+app.put('/todos/:id', function (req, res) {
+	var todoID = parseInt(req.params.id, 10);
+	var matchedToDo =_.findWhere(todos, {id: todoID});
+	var body = _.pick(req.body, 'description', 'completed');
+	var validAttributes = {};
+
+	if (!matchedToDo) {
+		res.status(404).send('404: something is fucked up. try again homie');
+	};
+
+	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+		validAttributes.completed = body.completed;
+	} else if (body.hasOwnProperty('completed')) {
+		return res.status(400).send('Oooh, something is fucked up. Completed should be a boolean');
+	};
+
+	if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+		validAttributes.description = body.description.trim();
+	} else if (body.hasOwnProperty('description')) {
+		return res.status(400).send('Oooh, something is fucked up w/ Description. Check up on it homie')
+	};
+
+	_.extend(matchedToDo, validAttributes);
+	res.send(matchedToDo);
+
 });
 
 
 
+app.listen(PORT, function() {
+	console.log('Express listening on port ' + PORT + '!');
+});
 
