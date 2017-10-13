@@ -13,7 +13,7 @@ app.get('/', function (req, res) {
 	res.send('Todo API Root');
 });
 
-// GET /todos
+// GET /todos?completed=true&description=buy
 app.get('/todos', function (req, res) {
 	var queryParams = req.query;
 	var filteredTodos = todos;
@@ -24,8 +24,18 @@ app.get('/todos', function (req, res) {
 		filteredTodos = _.where(todos, {completed: false})
 	};
 
+	// write query parameter for description that enables user to search for a term w/n the string
+		// use _.filter( , )
+		// use _.indexOf( , )
+
+	if (queryParams.hasOwnProperty('description') && queryParams.description.length >0 ) {
+		filteredTodos = _.filter(filteredTodos, function (todo) {
+		  return todo.description.toLowerCase().indexOf(queryParams.description.toLowerCase()) > -1;
+		});
+	}
+	
 	res.json(filteredTodos);
-})
+});
 
 // GET /todos/:id
 app.get('/todos/:id', function (req, res) {
