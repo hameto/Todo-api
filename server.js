@@ -45,16 +45,16 @@ app.get('/todos', function(req, res) {
 // GET /todos/:id
 app.get('/todos/:id', function(req, res) {
 	var todoID = parseInt(req.params.id, 10);
-	var matchedToDo = _.findWhere(todos, {
-		id: todoID
-	});
 
-	if (matchedToDo) {
-		res.json(matchedToDo);
-	} else {
-		res.send('404: something is fucked up. try again homie');
-		res.status(404).send();
-	};
+	db.todo.findById(todoID).then(function(todo) {
+		if (!!todo) {
+			res.json(todo.toJSON());
+		} else {
+			res.status(404).send();
+		}
+	}, function(e) {
+		res.status(500).send();
+	});
 });
 
 
@@ -62,51 +62,33 @@ app.get('/todos/:id', function(req, res) {
 app.post('/todos', function(req, res) {
 	var body = _.pick(req.body, 'description', 'completed');
 
-	// recreate same functionality but use our new todo model
-	// call: db.todo.create
-	//	(like we did in Todo.create in basic-sql-...)
-
-	// call create on db.todo
-	//	respond to api caller with 200 and todo (use .toJSON)
-	//	res.status(400).json(e) // <--valid
-
-
-	db.todo.create(body).then(function (todo) {
+	db.todo.create(body).then(function(todo) {
 		res.json(todo.toJSON());
-	}, function (e) {
+	}, function(e) {
 		res.status(400).json(e);
 	});
-
-
-	// if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
-	// 	return res.status(400).send();
-	// }
-
-	// // set body.description to be trimmed value
-	// body.description = body.description.trim();
-
-	// // add id field
-	// body.id = todos.length + 1;
-
-	// // push body into array
-	// todos.push(body);
-
-	// res.json(body);
 });
 
 // DELETE /todos/:id
 app.delete('/todos/:id', function(req, res) {
 	var todoID = parseInt(req.params.id, 10);
-	var matchedToDo = _.findWhere(todos, {
-		id: todoID
+
+	db.todo.findById(todoID).then(function(todo) {
+		res.json(todo.toJSON());
+	}, function(e) {
+		res.status(400).json(e);
 	});
 
-	if (!matchedToDo) {
-		res.status(404).send('404: something is fucked up. try again homie');
-	} else {
-		todos = _.without(todos, matchedToDo);
-		res.send(matchedToDo);
-	};
+	// var matchedToDo = _.findWhere(todos, {
+	// 	id: todoID
+	// });
+
+	// if (!matchedToDo) {
+	// 	res.status(404).send('404: something is fucked up. try again homie');
+	// } else {
+	// 	todos = _.without(todos, matchedToDo);
+	// 	res.send(matchedToDo);
+	// };
 });
 
 
