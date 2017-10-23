@@ -70,24 +70,34 @@ app.post('/todos', function(req, res) {
 // DELETE /todos/:id
 app.delete('/todos/:id', function(req, res) {
 	var todoID = parseInt(req.params.id, 10);
+	var matchedToDo = todos.findById(todoID);
 
-	db.todo.findById(todoID).then(function(todo) {
+	if (!!todo) {
+		db.todo.destroy({
+			matchedToDo: db.todoID
+		});
 		res.json(todo.toJSON());
-	}, function(e) {
-		res.status(400).json(e);
-	});
-
-	// var matchedToDo = _.findWhere(todos, {
-	// 	id: todoID
-	// });
-
-	// if (!matchedToDo) {
-	// 	res.status(404).send('404: something is fucked up. try again homie');
-	// } else {
-	// 	todos = _.without(todos, matchedToDo);
-	// 	res.send(matchedToDo);
-	// };
+	} else {
+		res.status(404).send();
+	}
 });
+
+// db.todo.findById(todoID).then(function(todo) {
+// 	res.json(todo.toJSON());
+// }, function(e) {
+// 	res.status(400).json(e);
+// });
+
+// var matchedToDo = _.findWhere(todos, {
+// 	id: todoID
+// });
+
+// if (!matchedToDo) {
+// 	res.status(404).send('404: something is fucked up. try again homie');
+// } else {
+// 	todos = _.without(todos, matchedToDo);
+// 	res.send(matchedToDo);
+// };
 
 
 // PUT /todos/:id
