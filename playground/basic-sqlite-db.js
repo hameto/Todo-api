@@ -53,7 +53,7 @@ sequelize.sync({
 	// 				$like: '%Hameto%'	
 	// 			}
 	// 		} 
-	// 	})
+	// 	});
 	// }).then(function (todos) {
 	// 	if (todos) {
 	// 		todos.forEach(function(todo) {
